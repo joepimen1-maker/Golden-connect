@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GOLDEN CONNECT - Official</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --bg: #18191a;
+            --card: #242526;
+            --accent: #FFD700;
+            --fb-blue: #0866ff;
+            --text: #e4e6eb;
+            --input-bg: #3a3b3c;
+        }
+
+        body {
+            font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
+            margin: 0; background-color: var(--bg); color: var(--text);
+            overflow-x: hidden; transition: background 0.5s;
+        }
+
+        /* --- PANTALLAS DE REGISTRO (ESTILO VIDEO) --- */
+        .auth-container {
+            position: fixed; inset: 0; background: var(--bg); z-index: 2000;
+            display: flex; flex-direction: column; align-items: center;
+            padding: 50px 25px; text-align: center;
+        }
+
+        .step { display: none; width: 100%; max-width: 400px; animation: slideUp 0.4s ease-out; }
+        .active-step { display: block; }
+
+        h2 { font-size: 24px; font-weight: 700; margin-bottom: 10px; }
+        .step-desc { color: #b0b3b8; font-size: 14px; margin-bottom: 25px; }
+
+        input, select {
+            width: 100%; padding: 15px; background: var(--input-bg);
+            border: 1px solid #444; border-radius: 12px; color: white;
+            margin-bottom: 15px; font-size: 16px; outline: none; box-sizing: border-box;
+        }
+
+        .btn-next {
+            width: 100%; padding: 14px; background: var(--fb-blue); color: white;
+            border: none; border-radius: 25px; font-weight: bold; font-size: 16px;
+            cursor: pointer; transition: 0.2s;
+        }
+
+        .profile-pic-preview {
+            width: 140px; height: 140px; border-radius: 50%;
+            border: 4px solid var(--accent); object-fit: cover;
+            margin-bottom: 20px; background: #333;
+        }
+
+        /* --- INTERFAZ PRINCIPAL (VISTA PROFESIONAL) --- */
+        #main-app { display: none; padding-top: 100px; }
+        
+        header {
+            background: var(--card); position: fixed; top: 0; width: 100%;
+            z-index: 100; border-bottom: 1px solid #333;
+        }
+
+        .top-nav { display: flex; justify-content: space-between; padding: 8px 15px; align-items: center; }
+        .logo-gc { color: var(--accent); font-size: 24px; font-weight: 800; letter-spacing: -1px; }
+
+        .tabs { display: flex; border-top: 1px solid #333; }
+        .tabs i { flex: 1; text-align: center; padding: 12px; font-size: 22px; color: #b0b3b8; }
+        .tabs i.active { color: var(--accent); border-bottom: 3px solid var(--accent); }
+
+        .container { max-width: 500px; margin: auto; padding: 0 10px; }
+
+        /* Historias Estilo image_4 */
+        .stories-scroll { display: flex; gap: 10px; padding: 15px 0; overflow-x: auto; }
+        .st-card {
+            min-width: 110px; height: 180px; background: #333; border-radius: 12px;
+            position: relative; border: 1px solid #3e4042; background-size: cover;
+        }
+        .st-ring {
+            position: absolute; top: 10px; left: 10px; width: 34px; height: 34px;
+            border: 3px solid var(--accent); border-radius: 50%; overflow: hidden;
+        }
+
+        /* Post Estilo image_5 */
+        .post-card { background: var(--card); border-radius: 12px; padding: 15px; margin-bottom: 15px; border: 1px solid #333; }
+        .post-u-img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid var(--accent); }
+        
+        .floating-bg-btn {
+            position: fixed; bottom: 25px; right: 25px; background: var(--accent);
+            width: 55px; height: 55px; border-radius: 50%; display: flex;
+            align-items: center; justify-content: center; color: black; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+<div id="auth-screen" class="auth-container">
+    <div class="logo-gc" style="margin-bottom: 40px;">GOLDEN CONNECT</div>
+
+    <div id="step1" class="step active-step">
+        <h2>¿Cómo te llamas?</h2>
+        <p class="step-desc">Añade tu nombre real para que tus amigos te encuentren.</p>
+        <input type="text" id="regName" placeholder="Nombre">
+        <input type="text" id="regLastName" placeholder="Apellidos">
+        <button class="btn-next" onclick="goToStep(2)">Siguiente</button>
+    </div>
+
+    <div id="step2" class="step">
+        <h2>¿Cuándo naciste?</h2>
+        <p class="step-desc">Usa tu fecha real (Día / Mes / Año).</p>
+        <div style="display:flex; gap:10px;">
+            <input type="number" id="bdDay" placeholder="Día" min="1" max="31">
+            <input type="number" id="bdMonth" placeholder="Mes" min="1" max="12">
+            <input type="number" id="bdYear" placeholder="Año" min="1950" max="2026">
+        </div>
+        <button class="btn-next" onclick="goToStep(3)">Siguiente</button>
+    </div>
+
+    <div id="step3" class="step">
+        <h2>Foto de perfil</h2>
+        <p class="step-desc">Elige una foto que te represente en GOLDEN CONNECT.</p>
+        <label>
+            <img id="p-preview" class="profile-pic-preview" src="https://cdn-icons-png.flaticon.com/512/149/149071.png">
+            <input type="file" id="picInput" accept="image/*" style="display:none;" onchange="handlePic(this)">
+        </label>
+        <p style="font-size:12px; color:var(--accent);">Toca la imagen para subir</p>
+        <button class="btn-next" onclick="finalize()">Entrar a mi red social</button>
+    </div>
+</div>
+
+<div id="main-app">
+    <header>
+        <div class="top-nav">
+            <div class="logo-gc">GOLDEN CONNECT</div>
+            <div style="display:flex; gap: 15px; font-size: 20px;">
+                <i class="fas fa-plus-circle"></i>
+                <i class="fas fa-search"></i>
+                <i class="fab fa-messenger"></i>
+            </div>
+        </div>
+        <div class="tabs">
+            <i class="fas fa-home active"></i>
+            <i class="fas fa-users"></i>
+            <i class="fas fa-tv"></i>
+            <i class="fas fa-bars"></i>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="stories-scroll">
+            <div class="st-card" style="background-image: url('https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?q=80')">
+                <div class="st-ring"><img id="st-user-pic" src="" style="width:100%; height:100%; object-fit:cover;"></div>
+                <div style="position:absolute; bottom:8px; left:8px; font-size:11px; font-weight:bold;">Tu historia</div>
+            </div>
+            <div class="st-card"><div class="st-ring"></div></div>
+            <div class="st-card"><div class="st-ring"></div></div>
+        </div>
+
+        <div class="post-card">
+            <div style="display:flex; gap:12px; align-items:center;">
+                <img class="post-u-img user-dyn-pic" src="">
+                <div style="background:var(--input-bg); border-radius:22px; padding:12px 18px; flex:1; color:#b0b3b8; font-size:15px;">
+                    ¿Qué estás pensando, <span class="user-dyn-name"></span>?
+                </div>
+            </div>
+            <hr style="border:0; border-top:1px solid #333; margin:15px 0;">
+            <div style="display:flex; justify-content:space-around; font-size:13px; font-weight:600; color:#b0b3b8;">
+                <span><i class="fas fa-video" style="color:#f3425f"></i> Directo</span>
+                <span><i class="fas fa-image" style="color:#45bd62"></i> Foto</span>
+                <span><i class="fas fa-smile" style="color:#f7b928"></i> Sentimiento</span>
+            </div>
+        </div>
+
+        <div class="post-card">
+            <div style="display:flex; gap:12px; align-items:center; margin-bottom:12px;">
+                <img class="post-u-img user-dyn-pic" src="">
+                <div>
+                    <b class="user-dyn-name">Usuario</b><br>
+                    <small style="color:#aaa">Recién publicado · <i class="fas fa-globe-americas"></i></small>
+                </div>
+            </div>
+            <p style="margin-bottom:15px;">¡Bienvenido a tu nueva red social profesional! Todo configurado al estilo de tu video.</p>
+            <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80" style="width:100%; border-radius:10px;">
+        </div>
+    </div>
+</div>
+
+<label class="floating-bg-btn">
+    <i class="fas fa-image" style="font-size:24px;"></i>
+    <input type="file" accept="image/*" style="display:none;" onchange="bgChange(this)">
+</label>
+
+<script>
+    let profileData = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+
+    function goToStep(s) {
+        document.querySelectorAll('.step').forEach(el => el.classList.remove('active-step'));
+        document.getElementById('step'+s).classList.add('active-step');
+    }
+
+    function handlePic(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                document.getElementById('p-preview').src = e.target.result;
+                profileData = e.target.result;
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function finalize() {
+        const n = document.getElementById('regName').value;
+        const l = document.getElementById('regLastName').value;
+        if(!n) { alert("Por favor, completa tu nombre"); return; }
+
+        const full = n + " " + l;
+        localStorage.setItem('gc_prof_data', JSON.stringify({name: full, img: profileData}));
+        localStorage.setItem('gc_is_logged', 'true');
+        
+        startApp(full, profileData);
+    }
+
+    function startApp(name, img) {
+        document.getElementById('auth-screen').style.display = 'none';
+        document.getElementById('main-app').style.display = 'block';
+        document.querySelectorAll('.user-dyn-pic').forEach(el => el.src = img);
+        document.getElementById('st-user-pic').src = img;
+        document.querySelectorAll('.user-dyn-name').forEach(el => el.innerText = name);
+    }
+
+    function bgChange(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = (e) => document.body.style.backgroundImage = `url(${e.target.result})`;
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    window.onload = () => {
+        if(localStorage.getItem('gc_is_logged') === 'true') {
+            const d = JSON.parse(localStorage.getItem('gc_prof_data'));
+            startApp(d.name, d.img);
+        }
+    }
+</script>
+</body>
+</html>
